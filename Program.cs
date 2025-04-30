@@ -42,7 +42,8 @@ static async Task<IResult> GetAllTodos(TodoDb db)
     return TypedResults.Ok(await db.Todos.Select(x => new TodoItemDTO(x)).ToArrayAsync());
 }
 
-static async Task<IResult> GetCompleteTodos(TodoDb db) {
+static async Task<IResult> GetCompleteTodos(TodoDb db)
+{
     return TypedResults.Ok(await db.Todos.Where(t => t.IsComplete).Select(x => new TodoItemDTO(x)).ToListAsync());
 }
 
@@ -59,7 +60,10 @@ static async Task<IResult> CreateTodo(TodoItemDTO todoItemDTO, TodoDb db)
     var todoItem = new Todo
     {
         IsComplete = todoItemDTO.IsComplete,
-        Name = todoItemDTO.Name
+        Title = todoItemDTO.Title,
+        DueDate = todoItemDTO.DueDate,
+        Description = todoItemDTO.Description,
+        Tags = todoItemDTO.Tags
     };
 
     db.Todos.Add(todoItem);
@@ -76,9 +80,12 @@ static async Task<IResult> UpdateTodo(int id, TodoItemDTO todoItemDTO, TodoDb db
 
     if (todo is null) return TypedResults.NotFound();
 
-    todo.Name = todoItemDTO.Name;
+    todo.Title = todoItemDTO.Title;
     todo.IsComplete = todoItemDTO.IsComplete;
-
+    todo.DueDate = todoItemDTO.DueDate;
+    todo.Description = todoItemDTO.Description;
+    todo.Tags = todoItemDTO.Tags;
+    
     await db.SaveChangesAsync();
 
     return TypedResults.NoContent();
